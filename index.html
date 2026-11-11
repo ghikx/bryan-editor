@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bryan Editor — DTC Creative That Converts</title>
+<meta name="description" content="Bryan creates video and static creative for DTC & ecommerce brands — VO/B-roll, product demo, and UGC formats built around hook rate, CTR, and conversion.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A0A0A'/%3E%3Ctext x='50' y='68' font-family='Arial, Helvetica, sans-serif' font-weight='700' font-size='58' fill='%23F5F5F2' text-anchor='middle'%3EC%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap">
+<style>
+  @font-face{ font-family:'Haffer'; src: url('fonts/Haffer-Light.woff2') format('woff2'); font-weight: 300; font-style: normal; font-display: swap; }
+  @font-face{ font-family:'Haffer'; src: url('fonts/Haffer-LightItalic.woff2') format('woff2'); font-weight: 300; font-style: italic; font-display: swap; }
+  @font-face{ font-family:'Haffer'; src: url('fonts/Haffer-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face{ font-family:'Haffer'; src: url('fonts/Haffer-RegularItalic.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
+  @font-face{ font-family:'Haffer'; src: url('fonts/Haffer-Medium.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: swap; }
+  @font-face{ font-family:'Haffer'; src: url('fonts/Haffer-SemiBold.woff2') format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+  @font-face{ font-family:'Haffer'; src: url('fonts/Haffer-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+
+  :root{
+    --bg: #0A0A0A;
+    --bg-raised: #101010;
+    --fg: #F5F5F2;
+    --fg-dim: #A8A8A3;
+    --fg-faint: #6E6E69;
+    --line: rgba(245,245,242,0.10);
+    --line-strong: rgba(245,245,242,0.22);
+    --card: rgba(245,245,242,0.045);
+    --card-hover: rgba(245,245,242,0.08);
+    --accent: #F5F5F2;
+    --radius: 14px;
+    --maxw: 1180px;
+    --ff-head: 'Haffer', 'General Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --ff-body: 'Haffer', 'General Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --ff-mono: 'JetBrains Mono', monospace;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+  html{ scroll-behavior: smooth; overflow-x: hidden; width: 100%; }
+  body{
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--ff-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    width: 100%;
+  }
+  a{ color: inherit; text-decoration: none; }
+  ul{ list-style: none; }
+  img,svg{ display:block; max-width:100%; }
+
+  .wrap{ max-width: var(--maxw); margin: 0 auto; padding: 0 32px; }
+  section{ position: relative; padding: 120px 0; scroll-margin-top: 90px; }
+  @media (max-width: 760px){ section{ padding: 80px 0; } .wrap{ padding: 0 20px; } }
+
+  /* ---------- background texture ---------- */
+  .grain{
+    position: fixed; inset: 0; pointer-events: none; z-index: 1;
+    opacity: 0.035; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .blob{
+    position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0;
+    background: radial-gradient(circle, rgba(245,245,242,0.10), transparent 70%);
+  }
+
+  /* ---------- reveal animation ---------- */
+  .reveal{ opacity: 0; transform: translateY(-24px); transition: opacity .7s cubic-bezier(.16,.8,.24,1), transform .7s cubic-bezier(.16,.8,.24,1); }
+  .reveal.in{ opacity: 1; transform: translateY(0); }
+  .reveal.d1{ transition-delay: .08s; }
+  .reveal.d2{ transition-delay: .16s; }
+  .reveal.d3{ transition-delay: .24s; }
+  .reveal.d4{ transition-delay: .32s; }
+
+  /* ---------- nav ---------- */
+  header.nav{
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    background: rgba(10,10,10,0.72); backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+  }
+  header.nav .wrap{ display:flex; align-items:center; justify-content:space-between; padding-top:16px; padding-bottom:16px; }
+  .logo{ display:inline-flex; align-items: baseline; gap: 6px; }
+  .logo .logo-first{ font-family: var(--ff-head); font-weight: 300; font-size: 17px; letter-spacing: -0.01em; }
+  .logo .logo-role{ font-family: var(--ff-head); font-weight: 400; font-style: italic; font-size: 17px; color: var(--fg-dim); }
+  nav.links{ display:flex; gap: 32px; }
+  nav.links a{ font-size: 14px; color: var(--fg-dim); transition: color .2s; }
+  nav.links a:hover{ color: var(--fg); }
+  .nav-cta{
+    font-family: var(--ff-mono); font-size: 12.5px; padding: 9px 16px; border: 1px solid var(--line-strong);
+    border-radius: 100px; transition: background .2s, border-color .2s;
+  }
+  .nav-cta:hover{ background: var(--card-hover); border-color: var(--fg-faint); }
+  @media (max-width: 760px){ nav.links{ display:none; } }
+
+  /* ---------- hero ---------- */
+  .hero{ padding-top: 200px; padding-bottom: 100px; text-align: center; }
+  .hero .wrap{ display:flex; flex-direction: column; align-items: center; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family: var(--ff-mono); font-size: 12.5px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--fg-dim); border: 1px solid var(--line); padding: 7px 14px; border-radius: 100px;
+    margin-bottom: 36px;
+  }
+  .eyebrow .dot{ width:6px; height:6px; border-radius:50%; background: var(--fg); }
+
+  .brandmark{
+    display:flex; align-items: baseline; justify-content: center; flex-wrap: wrap;
+    gap: 18px; row-gap: 4px;
+  }
+  .brandmark .bm-first{
+    font-family: var(--ff-head); font-weight: 300; letter-spacing: -0.02em;
+    font-size: clamp(48px, 9vw, 100px); line-height: 1;
+  }
+  .brandmark .bm-role{
+    font-family: var(--ff-head); font-weight: 400; font-style: italic;
+    font-size: clamp(48px, 9vw, 100px); line-height: 1;
+    display:inline-block;
+    color: var(--fg-dim);
+  }
+
+  .hero p.lede{
+    margin-top: 30px; font-size: 18px; color: var(--fg-dim); max-width: 560px; line-height: 1.65;
+  }
+  .hero p.lede strong{ color: var(--fg); font-weight: 500; }
+  .hero-actions{ display:flex; gap:14px; margin-top: 40px; flex-wrap: wrap; justify-content: center; }
+  .btn{
+    font-family: var(--ff-body); font-weight: 500; font-size: 14.5px; padding: 14px 26px; border-radius: 10px;
+    display: inline-flex; align-items: center; gap: 8px; transition: all .2s;
+  }
+  .btn-primary{ background: var(--fg); color: var(--bg); }
+  .btn-primary:hover{ background: #d8d8d3; }
+  .btn-ghost{ border: 1px solid var(--line-strong); color: var(--fg); }
+  .btn-ghost:hover{ background: var(--card-hover); }
+
+  /* ---------- insights / stats (light/white module) ---------- */
+  .stats{
+    --fg: #0A0A0A;
+    --fg-dim: #55554f;
+    --fg-faint: #8a8a83;
+    --line: rgba(10,10,10,0.12);
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    padding: 80px 0; background: #F5F5F2;
+    position: relative; overflow: hidden;
+  }
+  .stats-grid-bg{
+    position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(rgba(10,10,10,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(10,10,10,0.06) 1px, transparent 1px);
+    background-size: 40px 40px;
+    -webkit-mask-image: radial-gradient(80% 100% at 50% 50%, #000 45%, transparent 95%);
+    mask-image: radial-gradient(80% 100% at 50% 50%, #000 45%, transparent 95%);
+  }
+  .stats-grid-glow{
+    position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(rgba(10,10,10,0.35) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(10,10,10,0.35) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0; transition: opacity .35s ease;
+    -webkit-mask-image: radial-gradient(180px 180px at var(--mx, 50%) var(--my, 50%), #000 0%, transparent 72%);
+    mask-image: radial-gradient(180px 180px at var(--mx, 50%) var(--my, 50%), #000 0%, transparent 72%);
+  }
+  .stats:hover .stats-grid-glow{ opacity: 1; }
+  .stats .wrap{ position: relative; z-index: 1; }
+  .stats-tag{
+    display:block; text-align:center;
+    font-family: var(--ff-mono); font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--fg-faint); margin-bottom: 48px;
+  }
+  .insights-row{ display:flex; align-items: stretch; justify-content: center; }
+  .insight{ flex: 1; text-align: center; padding: 0 20px; position: relative; }
+  .insight-divider{ width: 1px; align-self: stretch; background: var(--line); margin: 0 0; }
+  .i-num{
+    font-family: var(--ff-head); font-weight: 600; letter-spacing: -0.02em;
+    font-size: clamp(40px, 5.6vw, 68px); line-height: 1;
+    background: linear-gradient(180deg, var(--fg), var(--fg-dim));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .i-label{ margin-top: 14px; font-size: 13.5px; color: var(--fg-dim); }
+  @media (max-width: 760px){
+    .insights-row{ flex-wrap: wrap; }
+    .insight{ flex: 0 0 50%; padding: 24px 12px; }
+    .insight-divider{ display:none; }
+    .insight:nth-child(-n+4){ border-bottom: 1px solid var(--line); }
+    .insight:nth-child(odd){ border-right: 1px solid var(--line); }
+  }
+
+  /* ---------- section heads ---------- */
+  .section-head{ margin-bottom: 56px; max-width: 640px; }
+  #work .section-head{ text-align:center; margin-left:auto; margin-right:auto; }
+  .section-tag{
+    font-family: var(--ff-mono); font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--fg-faint); margin-bottom: 14px; display:block;
+  }
+  .section-head h2{
+    font-family: var(--ff-head); font-weight: 600; font-size: clamp(28px, 3.4vw, 40px); letter-spacing: -0.02em;
+  }
+  .section-head p{ margin-top: 14px; color: var(--fg-dim); font-size: 16px; }
+
+  /* ---------- curated link banner ---------- */
+  @keyframes curatedPulse{
+    0%, 100%{ box-shadow: 0 0 20px rgba(245,245,242,0.25); }
+    50%{ box-shadow: 0 0 40px rgba(245,245,242,0.5); }
+  }
+  .curated-banner{
+    display: none; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center;
+    text-align: center; margin: 0 auto 28px; padding: 16px 24px; max-width: 680px;
+    border-radius: 100px; background: var(--fg);
+    opacity: 0; transform: translateY(-8px) scale(.97);
+    transition: opacity .4s ease, transform .4s ease;
+  }
+  .curated-banner.show{ display: inline-flex; }
+  .curated-banner.in{ opacity: 1; transform: translateY(0) scale(1); animation: curatedPulse 2.4s ease-in-out infinite; }
+  .curated-dot{ width: 7px; height: 7px; border-radius: 50%; background: var(--bg); flex-shrink: 0; }
+  .curated-text{ font-size: 14.5px; font-weight: 500; color: var(--bg); }
+  .curated-text strong{ font-weight: 700; }
+  .curated-clear{
+    font-family: var(--ff-mono); font-size: 12px; font-weight: 500; color: var(--fg); background: var(--bg);
+    border: none; border-radius: 100px; padding: 7px 14px; cursor: pointer; transition: all .18s;
+  }
+  .curated-clear:hover{ background: #2a2a2a; }
+  .curated-close{
+    width: 24px; height: 24px; border-radius: 50%; border: none; background: rgba(10,10,10,0.12);
+    color: var(--bg); cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; flex-shrink: 0; transition: background .18s;
+  }
+  .curated-close:hover{ background: rgba(10,10,10,0.22); }
+
+  /* ---------- media type toggle (video / static) ---------- */
+  .media-toggle{
+    position: relative; display: flex; width: fit-content; margin: 0 auto 40px;
+    background: #F5F5F2; border-radius: 100px; padding: 4px;
+  }
+  .media-toggle-btn{
+    position: relative; z-index: 1; font-family: var(--ff-mono); font-size: 13px; font-weight: 500;
+    padding: 10px 26px; border-radius: 100px; border: none; background: transparent;
+    color: rgba(10,10,10,0.5); cursor: pointer; transition: color .25s ease; min-width: 100px;
+  }
+  .media-toggle-btn.active{ color: #F5F5F2; }
+  @keyframes toggleIndicatorGlow{
+    0%, 100%{ box-shadow: 0 0 14px rgba(10,10,10,0.32), inset 0 1px 0 rgba(255,255,255,0.1); }
+    50%{ box-shadow: 0 0 24px rgba(10,10,10,0.5), inset 0 1px 0 rgba(255,255,255,0.16); }
+  }
+  .media-toggle-indicator{
+    position: absolute; top: 4px; left: 4px; height: calc(100% - 8px); width: calc(50% - 4px);
+    background: rgba(10,10,10,0.86); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 100px; z-index: 0;
+    animation: toggleIndicatorGlow 2.4s ease-in-out infinite;
+    transition: transform .35s cubic-bezier(.16,.8,.24,1);
+  }
+  .media-toggle-indicator.static-active{ transform: translateX(100%); }
+  .static-empty{
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    padding: 90px 20px; color: var(--fg-dim); font-size: 15px;
+  }
+  .static-empty-dot{ width: 6px; height: 6px; border-radius: 50%; background: var(--fg-faint); }
+
+  /* ---------- horizontal reel teaser ---------- */
+  .work-reel{
+    display: flex; gap: 10px; overflow-x: auto; margin: 0 0 44px;
+    padding: 4px 4px 14px; scrollbar-width: none;
+  }
+  .work-reel::-webkit-scrollbar{ display: none; }
+  .work-reel-item{
+    flex: 0 0 156px; height: 236px; border-radius: 10px; overflow: hidden;
+    position: relative; cursor: pointer; background: #141412;
+    border: 1px solid var(--line);
+    transition: transform .3s cubic-bezier(.16,.8,.24,1), border-color .3s ease;
+  }
+  .work-reel-item:hover{ transform: translateY(-4px); border-color: var(--line-strong); }
+  .work-reel-item img{
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    filter: brightness(0.82);
+    transition: filter .3s ease;
+  }
+  .work-reel-item:hover img{ filter: brightness(1); }
+  .work-reel-item .play{
+    position: absolute; inset: 0; margin: auto; width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(0,0,0,0.45); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+    border: 1px solid rgba(255,255,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity .25s ease;
+  }
+  .work-reel-item:hover .play{ opacity: 1; }
+  .work-reel-item .play svg{ width: 14px; height: 14px; fill: #fff; stroke: #fff; }
+  .work-reel-item .reel-label{
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 20px 12px 10px;
+    background: linear-gradient(to top, rgba(0,0,0,0.82), rgba(0,0,0,0));
+    font-family: var(--ff-mono); font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase;
+    color: #F5F5F2; opacity: 0; transform: translateY(6px);
+    transition: opacity .25s ease, transform .25s ease;
+  }
+  .work-reel-item:hover .reel-label{ opacity: 1; transform: translateY(0); }
+
+  /* ---------- filter chips ---------- */
+  .filter-hint{
+    text-align:center; font-size: 14px; color: var(--fg-dim); margin-bottom: 20px;
+  }
+  .filter-row{ display:flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; align-items:center; justify-content:center; }
+  .chip{
+    font-family: var(--ff-mono); font-size: 13px; padding: 9px 16px; border-radius: 100px;
+    border: 1px solid var(--line-strong); color: var(--fg-dim); cursor: pointer; transition: border-color .18s, color .18s, background .18s, transform .15s;
+    background: transparent; -webkit-tap-highlight-color: transparent;
+    display: inline-flex; align-items:center;
+  }
+  .chip:hover{ border-color: var(--fg-faint); color: var(--fg); transform: translateY(-1px); }
+  .chip:active{ transform: translateY(0) scale(.97); }
+  .chip.active{ background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .chip-check{
+    display:inline-block; width:0; max-width:0; opacity:0; overflow:hidden;
+    transition: max-width .25s ease, opacity .2s ease, margin .25s ease;
+  }
+  .chip.active .chip-check{ max-width:14px; opacity:1; margin-right:6px; }
+  .chip-count{ opacity:0.5; margin-left:5px; }
+  .chip.active .chip-count{ opacity:0.7; }
+
+  .share-row{ display:flex; align-items:center; justify-content:center; gap: 10px; width:100%; margin-top: 6px; margin-bottom: 32px; }
+  .share-btn{
+    font-family: var(--ff-mono); font-size: 12.5px; color: var(--fg-faint); border: 1px dashed var(--line-strong);
+    padding: 8px 14px; border-radius: 100px; cursor: pointer; background: transparent; transition: all .18s;
+  }
+  .share-btn:hover{ color: var(--fg); border-color: var(--fg-faint); }
+  .share-btn.copied{ color: var(--bg); background: var(--fg); border-style: solid; border-color: var(--fg); }
+  .share-btn.active{ background: var(--fg); color: var(--bg); border-color: var(--fg); }
+
+  .see-more-row{ display:flex; justify-content:center; margin: 4px 0 40px; }
+  .see-more-row.hide{ display:none; }
+
+  /* ---------- manual selection bar ---------- */
+  .select-bar{
+    display: none; align-items: center; justify-content: center; gap: 12px;
+    margin: -6px auto 32px; padding: 10px 16px 10px 20px; max-width: 400px;
+    border: 1px solid var(--line-strong); border-radius: 100px; background: var(--card);
+  }
+  .select-bar.show{ display: flex; }
+  .select-bar-text{ font-size: 13px; color: var(--fg-dim); }
+  .select-bar-text strong{ color: var(--fg); font-weight: 600; }
+
+  /* ---------- project grid ---------- */
+  .grid{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  @media (max-width: 960px){ .grid{ grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px){ .grid{ grid-template-columns: 1fr; } }
+
+  .card{
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    overflow: hidden; display: flex; flex-direction: column;
+    transition: transform .4s cubic-bezier(.16,.8,.24,1), opacity .4s ease, border-color .35s, max-height .35s, margin .35s, padding .35s;
+    transition-delay: var(--stagger, 0ms), var(--stagger, 0ms), 0s, 0s, 0s, 0s;
+  }
+  .card:hover{ border-color: var(--line-strong); transform: translateY(-4px); }
+  .card.hide{
+    display: none;
+  }
+  .card-thumb{
+    aspect-ratio: 16/10; background: var(--bg-raised); position: relative;
+    display:flex; align-items:center; justify-content:center;
+    border-bottom: 1px solid var(--line);
+  }
+  .card-thumb .sample{
+    font-family: var(--ff-mono); font-size: 12px; color: var(--fg-faint); letter-spacing: 0.08em;
+  }
+  .play{
+    position:absolute; width:48px; height:48px; border-radius:50%; border: 1px solid var(--line-strong);
+    display:flex; align-items:center; justify-content:center; transition: all .2s;
+  }
+  .card:hover .play{ background: var(--fg); border-color: var(--fg); }
+  .play svg{ width:16px; height:16px; }
+  .play .tri{ fill: var(--fg); transition: fill .2s; }
+  .card:hover .play .tri{ fill: var(--bg); }
+
+  .select-check{
+    position: absolute; top: 10px; left: 10px; width: 26px; height: 26px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.55); background: rgba(10,10,10,0.4); backdrop-filter: blur(3px);
+    display: flex; align-items: center; justify-content: center; z-index: 2;
+    opacity: 0; pointer-events: none; transition: opacity .2s ease, background .2s ease, border-color .2s ease;
+  }
+  #projectGrid.select-mode .select-check{ opacity: 1; pointer-events: auto; }
+  #projectGrid.select-mode .card{ cursor: pointer; }
+  .select-check svg{ width: 14px; height: 14px; opacity: 0; transition: opacity .15s ease; stroke: var(--bg); }
+  .card.selected .select-check{ background: var(--fg); border-color: var(--fg); }
+  .card.selected .select-check svg{ opacity: 1; }
+  #projectGrid.select-mode .card:not(.selected):hover .select-check{ border-color: var(--fg); }
+
+  .card-body{ padding: 20px 22px 22px; flex: 1; display:flex; flex-direction:column; }
+  .card-title{ font-family: var(--ff-head); font-weight: 600; font-size: 17px; letter-spacing: -0.01em; }
+  .card-desc{ font-size: 13.5px; color: var(--fg-dim); margin-top: 8px; line-height: 1.55; flex:1; }
+  .card-tags{ display:flex; gap:6px; flex-wrap: wrap; margin-top: 16px; }
+  .tag-pill{
+    font-family: var(--ff-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--fg-faint); border: 1px solid var(--line); padding: 4px 9px; border-radius: 100px;
+  }
+  .card-link{
+    margin-top: 16px; font-size: 13px; color: var(--fg); display:flex; align-items:center; gap:6px;
+    border-top: 1px solid var(--line); padding-top: 14px;
+  }
+  .card-link svg{ width:12px; height:12px; transition: transform .2s; }
+  .card:hover .card-link svg{ transform: translate(2px,-2px); }
+
+  /* ---------- trajectory ---------- */
+  .traj{ display:grid; grid-template-columns: 1fr 1.4fr; gap: 60px; align-items:center; }
+  @media (max-width: 860px){ .traj{ grid-template-columns: 1fr; gap: 36px; } }
+  .traj-copy p{ color: var(--fg-dim); font-size: 15.5px; line-height: 1.7; }
+  .traj-copy p + p{ margin-top: 14px; }
+  .chart-box{
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px 28px 18px;
+  }
+  .chart-box .chart-label{ font-family: var(--ff-mono); font-size: 11.5px; color: var(--fg-faint); text-transform: uppercase; letter-spacing: 0.06em; display:flex; justify-content: space-between; margin-bottom: 18px;}
+  svg.growth path.line{
+    fill:none; stroke: var(--fg); stroke-width: 2; stroke-linecap: round;
+    stroke-dasharray: 1000; stroke-dashoffset: 1000; transition: stroke-dashoffset 1.6s cubic-bezier(.16,.8,.24,1);
+  }
+  svg.growth.in path.line{ stroke-dashoffset: 0; }
+  svg.growth path.area{ fill: url(#areaGrad); opacity:0; transition: opacity 1s ease .4s; }
+  svg.growth.in path.area{ opacity: 1; }
+  svg.growth .gridline{ stroke: var(--line); stroke-width: 1; }
+  svg.growth .dot{ fill: var(--bg); stroke: var(--fg); stroke-width: 2; opacity:0; transition: opacity .4s ease 1.4s; }
+  svg.growth.in .dot{ opacity: 1; }
+
+  /* ---------- format experience tags ---------- */
+  .format-tags{ display:flex; flex-wrap: wrap; gap: 12px; }
+  .format-tag{
+    font-family: var(--ff-mono); font-size: 13.5px; color: var(--fg-dim);
+    border: 1px solid var(--line-strong); border-radius: 100px; padding: 12px 20px;
+    transition: all .2s;
+  }
+  .format-tag:hover{ border-color: var(--fg-faint); color: var(--fg); background: var(--card-hover); }
+
+  /* ---------- contact ---------- */
+  .contact{ border-top: 1px solid var(--line); }
+  .contact-inner{
+    display:flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 40px;
+  }
+  .contact h2{
+    font-family: var(--ff-head); font-weight: 600; font-size: clamp(30px, 5vw, 52px); letter-spacing: -0.03em; max-width: 620px;
+  }
+  .contact-actions{ display:flex; flex-direction:column; gap: 12px; align-items: stretch; min-width: 240px; }
+
+  /* ---------- contact buttons (shared: inline row + modal) ---------- */
+  .contact-btn{
+    display:flex; align-items:center; gap: 10px; justify-content:flex-start;
+    font-family: var(--ff-body); font-size: 14.5px; font-weight: 500; color: var(--fg);
+    border: 1px solid var(--line-strong); border-radius: 10px; padding: 13px 18px;
+    background: transparent; cursor: pointer; transition: all .18s; width: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .contact-btn svg{ width:17px; height:17px; flex-shrink:0; color: var(--fg-dim); }
+  .contact-btn:hover{ background: var(--card-hover); border-color: var(--fg-faint); }
+  .contact-btn.copied{ background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .contact-btn.copied svg{ color: var(--bg); }
+
+  /* ---------- contact modal ---------- */
+  .modal-backdrop{
+    position: fixed; inset:0; z-index: 100; display:flex; align-items:center; justify-content:center;
+    background: rgba(5,5,5,0.6); backdrop-filter: blur(6px);
+    opacity:0; pointer-events:none; transition: opacity .25s ease;
+    padding: 24px;
+  }
+  .modal-backdrop.open{ opacity:1; pointer-events:auto; }
+  .modal-card{
+    background: #121212; border: 1px solid var(--line-strong); border-radius: 18px;
+    padding: 36px; max-width: 380px; width:100%; position:relative;
+    transform: translateY(14px) scale(.98); transition: transform .3s cubic-bezier(.16,.8,.24,1);
+  }
+  .modal-backdrop.open .modal-card{ transform: translateY(0) scale(1); }
+  .modal-card h3{ font-family: var(--ff-head); font-weight:600; font-size: 24px; letter-spacing:-0.02em; }
+  .modal-card p{ color: var(--fg-dim); font-size: 14.5px; margin-top:8px; }
+  .modal-actions{ display:flex; flex-direction:column; gap: 10px; margin-top: 26px; }
+  .modal-close{
+    position:absolute; top: 18px; right: 18px; width:32px; height:32px; border-radius:50%;
+    border: 1px solid var(--line-strong); background:transparent; color: var(--fg-dim);
+    cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px;
+    transition: all .18s;
+  }
+  .modal-close:hover{ color: var(--fg); border-color: var(--fg-faint); }
+
+  /* ---------- beam CTA ---------- */
+  @keyframes beamPulse{
+    0%, 100%{ box-shadow: 0 0 18px rgba(245,245,242,0.18), inset 0 1px 0 rgba(255,255,255,0.06); }
+    50%{ box-shadow: 0 0 30px rgba(245,245,242,0.34), inset 0 1px 0 rgba(255,255,255,0.1); }
+  }
+  @keyframes glintTravel{
+    0%   { left: 0%;   top: 0%; }
+    25%  { left: 100%; top: 0%; }
+    50%  { left: 100%; top: 100%; }
+    75%  { left: 0%;   top: 100%; }
+    100% { left: 0%;   top: 0%; }
+  }
+  .beam{
+    position: relative; display: inline-flex; isolation: isolate;
+    border-radius: var(--beam-radius, 10px); padding: 2px;
+    border: 1px solid var(--line-strong);
+    animation: beamPulse 2.6s ease-in-out infinite;
+    transition: box-shadow .3s ease, border-color .3s ease;
+  }
+  .beam:hover{
+    border-color: var(--fg-faint);
+  }
+  .beam > a{ position: relative; z-index: 1; border: none !important; }
+  .beam-ring{
+    position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 2; overflow: hidden;
+    padding: 1.5px;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box exclude, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box exclude, linear-gradient(#fff 0 0);
+  }
+  .beam-glint{
+    position: absolute; top: 0; left: 0; width: 110px; height: 110px;
+    transform: translate(-55px, -55px); border-radius: 50%;
+    opacity: 1; will-change: left, top, opacity;
+    background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.55) 22%, rgba(255,255,255,0) 58%);
+    animation: glintTravel 3.6s linear infinite;
+  }
+  .beam-glint.following{ animation: none; }
+
+  /* ---------- custom video player (YouTube-backed) ---------- */
+  .video-modal-card{
+    background: #000; border-radius: 16px; overflow: hidden;
+    width: 100%; max-width: min(420px, calc(88vh * 9 / 16));
+    aspect-ratio: 9 / 16;
+    position: relative; border: 1px solid var(--line-strong);
+    transform: translateY(14px) scale(.98); transition: transform .3s cubic-bezier(.16,.8,.24,1);
+  }
+  .modal-backdrop.open .video-modal-card{ transform: translateY(0) scale(1); }
+  .video-modal-card .modal-close{ background: rgba(0,0,0,0.55); z-index: 5; }
+  .video-player-wrap{ position: relative; width: 100%; height: 100%; background: #000; }
+  @media (max-width: 480px){
+    .modal-backdrop{ padding: 12px; }
+    .video-modal-card{ max-width: min(100%, calc(92vh * 9 / 16)); }
+  }
+  #ytPlayerHost, #vimeoPlayerHost{ position: absolute; inset: 0; width: 100%; height: 100%; }
+  #ytPlayerHost iframe, #vimeoPlayerHost iframe{ position: absolute; inset: 0; width: 100%; height: 100%; }
+  .video-toggle{
+    position: absolute; inset: 0; margin: auto; width: 64px; height: 64px; border-radius: 50%;
+    background: rgba(255,255,255,0.14); backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.28); z-index: 4;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    opacity: 1; transition: opacity .25s ease, background .2s ease;
+  }
+  .video-toggle:hover{ background: rgba(255,255,255,0.22); }
+  .video-toggle svg{ width: 22px; height: 22px; fill: #fff; }
+  .video-toggle .icon-pause{ display: none; }
+  .video-toggle.is-playing{ opacity: 0; }
+  .video-player-wrap:hover .video-toggle.is-playing{ opacity: 1; }
+  .video-toggle.is-playing .icon-play{ display: none; }
+  .video-toggle.is-playing .icon-pause{ display: block; }
+  .video-controls{
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
+    display: flex; align-items: center; gap: 12px; padding: 16px;
+    background: linear-gradient(0deg, rgba(0,0,0,0.7), transparent);
+  }
+  .video-mute{
+    width: 30px; height: 30px; border-radius: 50%; border: none; background: transparent; color: #fff;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; padding: 0;
+  }
+  .video-mute svg{ width: 16px; height: 16px; }
+  .video-seek{
+    flex: 1; height: 4px; background: rgba(255,255,255,0.25); border-radius: 100px; cursor: pointer; position: relative;
+  }
+  .video-seek-fill{ position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: #fff; border-radius: 100px; }
+  .video-time{ font-family: var(--ff-mono); font-size: 11.5px; color: rgba(255,255,255,0.8); flex-shrink: 0; }
+
+  /* ---------- static ad image viewer ---------- */
+  .image-modal-card{
+    background: #000; border-radius: 16px; overflow: hidden; max-width: 640px; width: 100%;
+    max-height: 88vh; position: relative; border: 1px solid var(--line-strong);
+    transform: translateY(14px) scale(.98); transition: transform .3s cubic-bezier(.16,.8,.24,1);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-backdrop.open .image-modal-card{ transform: translateY(0) scale(1); }
+  .image-modal-card .modal-close{ background: rgba(0,0,0,0.55); z-index: 5; }
+  #adImage{ display: block; width: 100%; height: auto; max-height: 88vh; object-fit: contain; }
+  .zoom-icon{
+    position: absolute; inset: 0; margin: auto; width: 52px; height: 52px; border-radius: 50%;
+    background: rgba(255,255,255,0.14); backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.28); z-index: 2;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity .25s ease, background .2s ease;
+  }
+  .card:hover .zoom-icon{ opacity: 1; }
+  .zoom-icon svg{ width: 20px; height: 20px; stroke: #fff; }
+
+  footer{ padding: 40px 0; border-top: 1px solid var(--line); }
+  footer .wrap{ display:flex; justify-content: space-between; color: var(--fg-faint); font-size: 12.5px; font-family: var(--ff-mono); flex-wrap:wrap; gap: 10px;}
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="nav">
+  <div class="wrap">
+    <a href="#top" class="logo"><span class="logo-first">Bryan</span><span class="logo-role">Editor</span></a>
+    <nav class="links">
+      <a href="#work">Work</a>
+      <a href="#approach">Approach</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <span class="beam" style="--beam-radius:100px;">
+      <span class="beam-ring"><span class="beam-glint"></span></span>
+      <a href="#" class="nav-cta" id="navContactBtn">Contact</a>
+    </span>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="blob" style="width:520px;height:520px;top:-160px;left:50%;transform:translateX(-50%);"></div>
+    <div class="wrap">
+      <div class="eyebrow reveal in"><span class="dot"></span> Available for DTC &amp; ecommerce brands</div>
+      <h1 class="brandmark reveal in d1">
+        <span class="bm-first">Bryan</span><span class="bm-role">Editor</span>
+      </h1>
+      <p class="lede reveal in d2">I create short-form video and static creative for DTC and ecommerce brands — VO/B-roll, product demo, and UGC. Built around the numbers that matter: hook rate, CTR, conversion. <strong>4+ years</strong>, one focus: performance.</p>
+      <div class="hero-actions reveal in d3">
+        <a href="#work" class="btn btn-primary">View work</a>
+        <span class="beam" style="--beam-radius:11px;">
+          <span class="beam-ring"><span class="beam-glint"></span></span>
+          <a href="#" class="btn btn-ghost" id="heroContactBtn">Contact</a>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSIGHTS -->
+  <section class="stats" id="statsSection">
+    <div class="stats-grid-bg"></div>
+    <div class="stats-grid-glow"></div>
+    <div class="wrap">
+      <span class="stats-tag reveal">Insights</span>
+      <div class="insights-row">
+        <div class="insight reveal">
+          <div class="i-num" data-count="4" data-suffix="+">0+</div>
+          <div class="i-label">Years of experience</div>
+        </div>
+        <div class="insight-divider"></div>
+        <div class="insight reveal d1">
+          <div class="i-num" data-count="500" data-suffix="+">0+</div>
+          <div class="i-label">Direct-response ads edited</div>
+        </div>
+        <div class="insight-divider"></div>
+        <div class="insight reveal d2">
+          <div class="i-num" data-count="20" data-suffix="+">0+</div>
+          <div class="i-label">Ecommerce brands</div>
+        </div>
+        <div class="insight-divider"></div>
+        <div class="insight reveal d3">
+          <div class="i-num" data-count="20" data-suffix="M+">0M+</div>
+          <div class="i-label">Views generated</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORK -->
+  <section id="work">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="section-tag">Selected work</span>
+        <h2>Creative for DTC &amp; ecommerce brands.</h2>
+        <p>A focused look at performance ad work — filterable by style.</p>
+      </div>
+
+      <div class="media-toggle">
+        <div class="media-toggle-indicator" id="mediaToggleIndicator"></div>
+        <button class="media-toggle-btn active" data-media="video">Video</button>
+        <button class="media-toggle-btn" data-media="static">Static</button>
+      </div>
+
+      <div id="videoPanel">
+
+      <div class="work-reel" id="workReel">
+
+<div class="work-reel-item" data-vid-vimeo="1190278167">
+          <img src="https://i.vimeocdn.com/video/2155017306-c099fe9e2dbfdba15da5d4d5f0d5abd9171d7f5538a2d8cf113da0c49bccad20-d_640?region=us" alt="" loading="lazy">
+          <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="reel-label">UGC</div>
+        </div>
+
+<div class="work-reel-item" data-vid-vimeo="1044821812">
+          <img src="https://i.vimeocdn.com/video/1968287822-f23893e92e8d4353d96dd2a57bf7d9a035969abe7b6db6337ccde85ecf7e3edd-d_640?region=us" alt="" loading="lazy">
+          <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="reel-label">UGC</div>
+        </div>
+
+<div class="work-reel-item" data-youtube-id="ZRRnPQEeiro">
+          <img src="https://i.ytimg.com/vi/ZRRnPQEeiro/hqdefault.jpg" alt="" loading="lazy">
+          <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="reel-label">UGC</div>
+        </div>
+
+<div class="work-reel-item" data-vid-vimeo="1069972159">
+          <img src="https://i.vimeocdn.com/video/1998405070-bdbf7282bfe6082dae9bcc0c55d8184de712889727e8d2f9aeea4e20900ddd7c-d_640?region=us" alt="" loading="lazy">
+          <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="reel-label">UGC</div>
+        </div>
+
+<div class="work-reel-item" data-vid-vimeo="1069969054">
+          <img src="https://i.vimeocdn.com/video/1998401104-0090e098bbd0bed031dd30f9fa16df1b8171c6a96a8f06937033472216955bc1-d_640?region=us" alt="" loading="lazy">
+          <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="reel-label">UGC</div>
+        </div>
+
+<div class="work-reel-item" data-youtube-id="nEHHvMGsFxo">
+          <img src="https://i.ytimg.com/vi/nEHHvMGsFxo/hqdefault.jpg" alt="" loading="lazy">
+          <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="reel-label">UGC</div>
+        </div>
+
+<div class="work-reel-item" data-youtube-id="49agLN9euDs">
+          <img src="https://i.ytimg.com/vi/49agLN9euDs/hqdefault.jpg" alt="" loading="lazy">
+          <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="reel-label">UGC</div>
+        </div>
+
+<div class="work-reel-item" data-youtube-id="m9bH5JdPvAI">
+          <img src="https://i.ytimg.com/vi/m9bH5JdPvAI/hqdefault.jpg" alt="" loading="lazy">
+          <div class="reel-label">UGC</div>
+          <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+
+<div class="work-reel-item" data-youtube-id="F0h8mdEfNtI">
+          <img src="https://i.ytimg.com/vi/F0h8mdEfNtI/hqdefault.jpg" alt="" loading="lazy">
+          <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="reel-label">UGC</div>
+        </div>
+
+<div class="work-reel-item" data-youtube-id="OFjX1KOlkFY">
+          <img src="https://i.ytimg.com/vi/OFjX1KOlkFY/hqdefault.jpg" alt="" loading="lazy">
+          <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="reel-label">VO / B-Roll</div>
+        </div>
+
+<div class="work-reel-item" data-youtube-id="g1bLyF2hKW4">
+          <img src="https://i.ytimg.com/vi/g1bLyF2hKW4/hqdefault.jpg" alt="" loading="lazy">
+          <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="reel-label">Product Demo / Lifestyle</div>
+        </div>
+      </div>
+      <div class="curated-banner" id="curatedBanner">
+        <span class="curated-dot"></span>
+        <span class="curated-text">A selection was made for you — showing <strong id="curatedCount">0</strong> relevant project<span id="curatedPlural">s</span>.</span>
+        <button class="curated-clear" id="curatedClear">View full portfolio</button>
+        <button class="curated-close" id="curatedClose" aria-label="Dismiss">✕</button>
+      </div>
+
+      <p class="filter-hint reveal">Looking for a specific style? Filter by format.</p>
+      <div class="filter-row reveal">
+        <button class="chip active" data-tag="all"><span class="chip-check">✓</span>All<span class="chip-count"></span></button>
+        <button class="chip" data-tag="lifestyle"><span class="chip-check">✓</span>VO / B-Roll<span class="chip-count"></span></button>
+        <button class="chip" data-tag="productdemo"><span class="chip-check">✓</span>Product Demo / Lifestyle<span class="chip-count"></span></button>
+        <button class="chip" data-tag="ugc"><span class="chip-check">✓</span>UGC<span class="chip-count"></span></button>
+      </div>
+      <div class="share-row">
+        <button class="share-btn" id="copyLinkBtn">Copy filtered link</button>
+        <button class="share-btn" id="selectModeBtn">Select videos</button>
+      </div>
+      <div class="select-bar" id="selectBar">
+        <span class="select-bar-text"><strong id="selectCount">0</strong> selected</span>
+        <button class="curated-clear" id="copySelectionBtn">Copy selection link</button>
+        <button class="curated-close" id="exitSelectBtn" aria-label="Exit selection">✕</button>
+      </div>
+
+      <div class="grid" id="projectGrid">
+
+
+<article class="card reveal" data-tags="ugc" data-vid-vimeo="1190278167">
+          <div class="card-thumb" style="background-image:url('https://i.vimeocdn.com/video/2155017306-c099fe9e2dbfdba15da5d4d5f0d5abd9171d7f5538a2d8cf113da0c49bccad20-d_640?region=us');background-size:cover;background-position:center;">
+            <div class="play"><svg viewBox="0 0 24 24"><path class="tri" d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">UGC Ad — Variant 13</div>
+            <div class="card-desc">UGC-style short-form ad, built for hook and retention.</div>
+            <div class="card-tags"><span class="tag-pill">UGC</span></div>
+            <a href="#" class="card-link">View reel <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+          </div>
+        </article>
+
+<article class="card reveal" data-tags="ugc" data-vid-vimeo="1044821812">
+          <div class="card-thumb" style="background-image:url('https://i.vimeocdn.com/video/1968287822-f23893e92e8d4353d96dd2a57bf7d9a035969abe7b6db6337ccde85ecf7e3edd-d_640?region=us');background-size:cover;background-position:center;">
+            <div class="play"><svg viewBox="0 0 24 24"><path class="tri" d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">UGC Ad — Variant 16</div>
+            <div class="card-desc">UGC-style short-form ad, built for hook and retention.</div>
+            <div class="card-tags"><span class="tag-pill">UGC</span></div>
+            <a href="#" class="card-link">View reel <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+          </div>
+        </article>
+
+<article class="card reveal d2" data-tags="ugc" data-youtube-id="ZRRnPQEeiro">
+          <div class="card-thumb" style="background-image:url('https://i.ytimg.com/vi/ZRRnPQEeiro/hqdefault.jpg');background-size:cover;background-position:center;">
+            <div class="play"><svg viewBox="0 0 24 24"><path class="tri" d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">UGC Ad — Pet Wellness Product · Variant A</div>
+            <div class="card-desc">UGC testimonial ad for a pet wellness supplement, built for trust and relatability.</div>
+            <div class="card-tags"><span class="tag-pill">UGC</span></div>
+            <a href="#" class="card-link">View reel <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+          </div>
+        </article>
+
+<article class="card reveal d1" data-tags="ugc" data-vid-vimeo="1069972159">
+          <div class="card-thumb" style="background-image:url('https://i.vimeocdn.com/video/1998405070-bdbf7282bfe6082dae9bcc0c55d8184de712889727e8d2f9aeea4e20900ddd7c-d_640?region=us');background-size:cover;background-position:center;">
+            <div class="play"><svg viewBox="0 0 24 24"><path class="tri" d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">UGC Ad — Variant 14</div>
+            <div class="card-desc">UGC-style short-form ad, built for hook and retention.</div>
+            <div class="card-tags"><span class="tag-pill">UGC</span></div>
+            <a href="#" class="card-link">View reel <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+          </div>
+        </article>
+
+<article class="card reveal d2" data-tags="ugc" data-vid-vimeo="1069969054">
+          <div class="card-thumb" style="background-image:url('https://i.vimeocdn.com/video/1998401104-0090e098bbd0bed031dd30f9fa16df1b8171c6a96a8f06937033472216955bc1-d_640?region=us');background-size:cover;background-position:center;">
+            <div class="play"><svg viewBox="0 0 24 24"><path class="tri" d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">UGC Ad — Variant 15</div>
+            <div class="card-desc">UGC-style short-form ad, built for hook and retention.</div>
+            <div class="card-tags"><span class="tag-pill">UGC</span></div>
+            <a href="#" class="card-link">View reel <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+          </div>
+        </article>
+
+<article class="card reveal" data-tags="ugc" data-youtube-id="nEHHvMGsFxo">
+          <div class="card-thumb" style="background-image:url('https://i.ytimg.com/vi/nEHHvMGsFxo/hqdefault.jpg');background-size:cover;background-position:center;">
+            <div class="play"><svg viewBox="0 0 24 24"><path class="tri" d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">UGC Ad — Pet Wellness Product · Variant B</div>
+            <div class="card-desc">UGC testimonial ad for a pet wellness supplement, built for trust and relatability.</div>
+            <div class="card-tags"><span class="tag-pill">UGC</span></div>
+            <a href="#" class="card-link">View reel <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+          </div>
+        </article>
+
+<article class="card reveal d1" data-tags="ugc" data-youtube-id="49agLN9euDs">
+          <div class="card-thumb" style="background-image:url('https://i.ytimg.com/vi/49agLN9euDs/hqdefault.jpg');background-size:cover;background-position:center;">
+            <div class="play"><svg viewBox="0 0 24 24"><path class="tri" d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">UGC Ad — Pet Wellness Product · Variant C</div>
+            <div class="card-desc">UGC testimonial ad for a pet wellness supplement, built for trust and relatability.</div>
+            <div class="card-tags"><span class="tag-pill">UGC</span></div>
+            <a href="#" class="card-link">View reel <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+          </div>
+        </article>
+
+<article class="card reveal d2" data-tags="ugc" data-youtube-id="m9bH5JdPvAI">
+          <div class="card-thumb" style="background-image:url('https://i.ytimg.com/vi/m9bH5JdPvAI/hqdefault.jpg');background-size:cover;background-position:center;">
+            <div class="play"><svg viewBox="0 0 24 24"><path class="tri" d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">UGC Ad — Pet Wellness Product · Variant D</div>
+            <div class="card-desc">UGC testimonial ad for a pet wellness supplement, built for trust and relatability.</div>
+            <div class="card-tags"><span class="tag-pill">UGC</span></div>
+            <a href="#" class="card-link">View reel <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+          </div>
+        </article>
+
+<article class="card reveal d2" data-tags="ugc" data-youtube-id="F0h8mdEfNtI">
+          <div class="card-thumb" style="background-image:url('https://i.ytimg.com/vi/F0h8mdEfNtI/hqdefault.jpg');background-size:cover;background-position:center;">
+            <div class="play"><svg viewBox="0 0 24 24"><path class="tri" d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">UGC Ad — Variant 12</div>
+            <div class="card-desc">UGC-style short-form ad, built for hook and retention.</div>
+            <div class="card-tags"><span class="tag-pill">UGC</span></div>
+            <a href="#" class="card-link">View reel <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+          </div>
+        </article>
+
+<article class="card reveal" data-tags="lifestyle" data-youtube-id="OFjX1KOlkFY">
+          <div class="card-thumb" style="background-image:url('https://i.ytimg.com/vi/OFjX1KOlkFY/hqdefault.jpg');background-size:cover;background-position:center;">
+            <div class="play"><svg viewBox="0 0 24 24"><path class="tri" d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">VO B-Roll Ad — Nerve Health Product · Variant A</div>
+            <div class="card-desc">Voiceover-driven B-roll ad for a nerve health product, pairing narrative footage with a scripted VO.</div>
+            <div class="card-tags"><span class="tag-pill">VO / B-Roll</span></div>
+            <a href="#" class="card-link">View reel <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+          </div>
+        </article>
+
+<article class="card reveal" data-tags="productdemo" data-youtube-id="g1bLyF2hKW4">
+          <div class="card-thumb" style="background-image:url('https://i.ytimg.com/vi/g1bLyF2hKW4/hqdefault.jpg');background-size:cover;background-position:center;">
+            <div class="play"><svg viewBox="0 0 24 24"><path class="tri" d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Product Demo Ad — Haircare Product · Variant A</div>
+            <div class="card-desc">Product demo ad for a haircare product, styled with lifestyle b-roll and trending audio.</div>
+            <div class="card-tags"><span class="tag-pill">Product Demo / Lifestyle</span></div>
+            <a href="#" class="card-link">View reel <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+          </div>
+        </article>
+
+      
+      </div>
+
+      <div class="see-more-row hide" id="videoSeeMoreRow">
+        <button class="share-btn" id="videoSeeMoreBtn">See more</button>
+      </div>
+
+      </div>
+
+      <div id="staticPanel" style="display:none;">
+
+        <div class="work-reel" id="staticReel">
+          <div class="work-reel-item" data-image="images/static/nerve-health-rubitin-7.png">
+            <img src="images/static/nerve-health-rubitin-7.png" alt="" loading="lazy">
+            <div class="play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            <div class="reel-label">Advertorial</div>
+          </div>
+          <div class="work-reel-item" data-image="images/static/nerve-health-60seconds-1.png">
+            <img src="images/static/nerve-health-60seconds-1.png" alt="" loading="lazy">
+            <div class="play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            <div class="reel-label">Advertorial</div>
+          </div>
+          <div class="work-reel-item" data-image="images/static/nerve-health-60seconds-2.png">
+            <img src="images/static/nerve-health-60seconds-2.png" alt="" loading="lazy">
+            <div class="play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            <div class="reel-label">Advertorial</div>
+          </div>
+          <div class="work-reel-item" data-image="images/static/nerve-health-60seconds-3.png">
+            <img src="images/static/nerve-health-60seconds-3.png" alt="" loading="lazy">
+            <div class="play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            <div class="reel-label">Advertorial</div>
+          </div>
+          <div class="work-reel-item" data-image="images/static/nerve-health-howmany-4.png">
+            <img src="images/static/nerve-health-howmany-4.png" alt="" loading="lazy">
+            <div class="play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            <div class="reel-label">Advertorial</div>
+          </div>
+          <div class="work-reel-item" data-image="images/static/nerve-health-howmany-5.png">
+            <img src="images/static/nerve-health-howmany-5.png" alt="" loading="lazy">
+            <div class="play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            <div class="reel-label">Advertorial</div>
+          </div>
+          <div class="work-reel-item" data-image="images/static/nerve-health-howmany-6.png">
+            <img src="images/static/nerve-health-howmany-6.png" alt="" loading="lazy">
+            <div class="play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            <div class="reel-label">Advertorial</div>
+          </div>
+          <div class="work-reel-item" data-image="images/static/hair-growth-promise-1.jpg">
+            <img src="images/static/hair-growth-promise-1.jpg" alt="" loading="lazy">
+            <div class="play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            <div class="reel-label">Promise / Results</div>
+          </div>
+          <div class="work-reel-item" data-image="images/static/hair-growth-promise-2.jpg">
+            <img src="images/static/hair-growth-promise-2.jpg" alt="" loading="lazy">
+            <div class="play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            <div class="reel-label">Promise / Results</div>
+          </div>
+          <div class="work-reel-item" data-image="images/static/hair-growth-promise-3.jpg">
+            <img src="images/static/hair-growth-promise-3.jpg" alt="" loading="lazy">
+            <div class="play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            <div class="reel-label">Promise / Results</div>
+          </div>
+          <div class="work-reel-item" data-image="images/static/hair-growth-promise-4.jpg">
+            <img src="images/static/hair-growth-promise-4.jpg" alt="" loading="lazy">
+            <div class="play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            <div class="reel-label">Promise / Results</div>
+          </div>
+          <div class="work-reel-item" data-image="images/static/nail-care-stat-1.jpg">
+            <img src="images/static/nail-care-stat-1.jpg" alt="" loading="lazy">
+            <div class="play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            <div class="reel-label">Stat-Led</div>
+          </div>
+          <div class="work-reel-item" data-image="images/static/nail-care-stat-2.jpg">
+            <img src="images/static/nail-care-stat-2.jpg" alt="" loading="lazy">
+            <div class="play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            <div class="reel-label">Stat-Led</div>
+          </div>
+          <div class="work-reel-item" data-image="images/static/nail-care-stat-3.jpg">
+            <img src="images/static/nail-care-stat-3.jpg" alt="" loading="lazy">
+            <div class="play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            <div class="reel-label">Stat-Led</div>
+          </div>
+          <div class="work-reel-item" data-image="images/static/nail-care-stat-4.jpg">
+            <img src="images/static/nail-care-stat-4.jpg" alt="" loading="lazy">
+            <div class="play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            <div class="reel-label">Stat-Led</div>
+          </div>
+          <div class="work-reel-item" data-image="images/static/nail-care-stat-5.jpg">
+            <img src="images/static/nail-care-stat-5.jpg" alt="" loading="lazy">
+            <div class="play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            <div class="reel-label">Stat-Led</div>
+          </div>
+          <div class="work-reel-item" data-image="images/static/foot-recovery-listicle-1.jpg">
+            <img src="images/static/foot-recovery-listicle-1.jpg" alt="" loading="lazy">
+            <div class="play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            <div class="reel-label">Feature Grid</div>
+          </div>
+        </div>
+
+        <p class="filter-hint reveal in">Looking for a specific style? Filter by format.</p>
+        <div class="filter-row reveal in">
+          <button class="chip active" data-tag="all"><span class="chip-check">✓</span>All<span class="chip-count"></span></button>
+          <button class="chip" data-tag="advertorial"><span class="chip-check">✓</span>Advertorial<span class="chip-count"></span></button>
+          <button class="chip" data-tag="promise"><span class="chip-check">✓</span>Promise / Results<span class="chip-count"></span></button>
+          <button class="chip" data-tag="statled"><span class="chip-check">✓</span>Stat-Led<span class="chip-count"></span></button>
+          <button class="chip" data-tag="featuregrid"><span class="chip-check">✓</span>Feature Grid<span class="chip-count"></span></button>
+        </div>
+
+        <div class="grid" id="staticGrid">
+
+          <article class="card reveal" data-tags="advertorial" data-image="images/static/nerve-health-rubitin-7.png">
+            <div class="card-thumb" style="background-image:url('images/static/nerve-health-rubitin-7.png');background-size:cover;background-position:center;">
+              <div class="zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Advertorial — Nerve Health Product · Variant A</div>
+              <div class="card-desc">Static advertorial ad for a nerve health product, built around a "rub it in" hook.</div>
+              <div class="card-tags"><span class="tag-pill">Advertorial</span></div>
+              <a href="#" class="card-link">View ad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+            </div>
+          </article>
+
+          <article class="card reveal d1" data-tags="advertorial" data-image="images/static/nerve-health-60seconds-1.png">
+            <div class="card-thumb" style="background-image:url('images/static/nerve-health-60seconds-1.png');background-size:cover;background-position:center;">
+              <div class="zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Advertorial — Nerve Health Product · Variant B</div>
+              <div class="card-desc">Static advertorial ad for a nerve health product, built around a "60 seconds before bed" hook.</div>
+              <div class="card-tags"><span class="tag-pill">Advertorial</span></div>
+              <a href="#" class="card-link">View ad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+            </div>
+          </article>
+
+          <article class="card reveal d2" data-tags="advertorial" data-image="images/static/nerve-health-60seconds-2.png">
+            <div class="card-thumb" style="background-image:url('images/static/nerve-health-60seconds-2.png');background-size:cover;background-position:center;">
+              <div class="zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Advertorial — Nerve Health Product · Variant C</div>
+              <div class="card-desc">Static advertorial ad for a nerve health product, built around a "60 seconds before bed" hook.</div>
+              <div class="card-tags"><span class="tag-pill">Advertorial</span></div>
+              <a href="#" class="card-link">View ad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+            </div>
+          </article>
+
+          <article class="card reveal" data-tags="advertorial" data-image="images/static/nerve-health-60seconds-3.png">
+            <div class="card-thumb" style="background-image:url('images/static/nerve-health-60seconds-3.png');background-size:cover;background-position:center;">
+              <div class="zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Advertorial — Nerve Health Product · Variant D</div>
+              <div class="card-desc">Static advertorial ad for a nerve health product, built around a "60 seconds before bed" hook.</div>
+              <div class="card-tags"><span class="tag-pill">Advertorial</span></div>
+              <a href="#" class="card-link">View ad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+            </div>
+          </article>
+
+          <article class="card reveal d1" data-tags="advertorial" data-image="images/static/nerve-health-howmany-4.png">
+            <div class="card-thumb" style="background-image:url('images/static/nerve-health-howmany-4.png');background-size:cover;background-position:center;">
+              <div class="zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Advertorial — Nerve Health Product · Variant E</div>
+              <div class="card-desc">Static advertorial ad for a nerve health product, built around a "how many of these are you" checklist hook.</div>
+              <div class="card-tags"><span class="tag-pill">Advertorial</span></div>
+              <a href="#" class="card-link">View ad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+            </div>
+          </article>
+
+          <article class="card reveal d2" data-tags="advertorial" data-image="images/static/nerve-health-howmany-5.png">
+            <div class="card-thumb" style="background-image:url('images/static/nerve-health-howmany-5.png');background-size:cover;background-position:center;">
+              <div class="zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Advertorial — Nerve Health Product · Variant F</div>
+              <div class="card-desc">Static advertorial ad for a nerve health product, built around a "how many of these are you" checklist hook.</div>
+              <div class="card-tags"><span class="tag-pill">Advertorial</span></div>
+              <a href="#" class="card-link">View ad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+            </div>
+          </article>
+
+          <article class="card reveal" data-tags="advertorial" data-image="images/static/nerve-health-howmany-6.png">
+            <div class="card-thumb" style="background-image:url('images/static/nerve-health-howmany-6.png');background-size:cover;background-position:center;">
+              <div class="zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Advertorial — Nerve Health Product · Variant G</div>
+              <div class="card-desc">Static advertorial ad for a nerve health product, built around a "how many of these are you" checklist hook.</div>
+              <div class="card-tags"><span class="tag-pill">Advertorial</span></div>
+              <a href="#" class="card-link">View ad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+            </div>
+          </article>
+
+          <article class="card reveal d1" data-tags="promise" data-image="images/static/hair-growth-promise-1.jpg">
+            <div class="card-thumb" style="background-image:url('images/static/hair-growth-promise-1.jpg');background-size:cover;background-position:center;">
+              <div class="zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Promise Ad — Hair Growth Product · Variant A</div>
+              <div class="card-desc">Static promise-led ad for a hair growth product, built around a results timeline.</div>
+              <div class="card-tags"><span class="tag-pill">Promise / Results</span></div>
+              <a href="#" class="card-link">View ad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+            </div>
+          </article>
+
+          <article class="card reveal d2" data-tags="promise" data-image="images/static/hair-growth-promise-2.jpg">
+            <div class="card-thumb" style="background-image:url('images/static/hair-growth-promise-2.jpg');background-size:cover;background-position:center;">
+              <div class="zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Promise Ad — Hair Growth Product · Variant B</div>
+              <div class="card-desc">Static promise-led ad for a hair growth product, built around a results timeline.</div>
+              <div class="card-tags"><span class="tag-pill">Promise / Results</span></div>
+              <a href="#" class="card-link">View ad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+            </div>
+          </article>
+
+          <article class="card reveal" data-tags="promise" data-image="images/static/hair-growth-promise-3.jpg">
+            <div class="card-thumb" style="background-image:url('images/static/hair-growth-promise-3.jpg');background-size:cover;background-position:center;">
+              <div class="zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Promise Ad — Hair Growth Product · Variant C</div>
+              <div class="card-desc">Static promise-led ad for a hair growth product, built around a results timeline.</div>
+              <div class="card-tags"><span class="tag-pill">Promise / Results</span></div>
+              <a href="#" class="card-link">View ad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+            </div>
+          </article>
+
+          <article class="card reveal d1" data-tags="promise" data-image="images/static/hair-growth-promise-4.jpg">
+            <div class="card-thumb" style="background-image:url('images/static/hair-growth-promise-4.jpg');background-size:cover;background-position:center;">
+              <div class="zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Promise Ad — Hair Growth Product · Variant D</div>
+              <div class="card-desc">Static promise-led ad for a hair growth product, built around a results timeline.</div>
+              <div class="card-tags"><span class="tag-pill">Promise / Results</span></div>
+              <a href="#" class="card-link">View ad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+            </div>
+          </article>
+
+          <article class="card reveal d2" data-tags="statled" data-image="images/static/nail-care-stat-1.jpg">
+            <div class="card-thumb" style="background-image:url('images/static/nail-care-stat-1.jpg');background-size:cover;background-position:center;">
+              <div class="zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Stat-Led Ad — Nail Care Product · Variant A</div>
+              <div class="card-desc">Static stat-led ad for a nail care product, built around a consumer study callout.</div>
+              <div class="card-tags"><span class="tag-pill">Stat-Led</span></div>
+              <a href="#" class="card-link">View ad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+            </div>
+          </article>
+
+          <article class="card reveal" data-tags="statled" data-image="images/static/nail-care-stat-2.jpg">
+            <div class="card-thumb" style="background-image:url('images/static/nail-care-stat-2.jpg');background-size:cover;background-position:center;">
+              <div class="zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Stat-Led Ad — Nail Care Product · Variant B</div>
+              <div class="card-desc">Static stat-led ad for a nail care product, built around a consumer study callout.</div>
+              <div class="card-tags"><span class="tag-pill">Stat-Led</span></div>
+              <a href="#" class="card-link">View ad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+            </div>
+          </article>
+
+          <article class="card reveal d1" data-tags="statled" data-image="images/static/nail-care-stat-3.jpg">
+            <div class="card-thumb" style="background-image:url('images/static/nail-care-stat-3.jpg');background-size:cover;background-position:center;">
+              <div class="zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Stat-Led Ad — Nail Care Product · Variant C</div>
+              <div class="card-desc">Static stat-led ad for a nail care product, built around a consumer study callout.</div>
+              <div class="card-tags"><span class="tag-pill">Stat-Led</span></div>
+              <a href="#" class="card-link">View ad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+            </div>
+          </article>
+
+          <article class="card reveal d2" data-tags="statled" data-image="images/static/nail-care-stat-4.jpg">
+            <div class="card-thumb" style="background-image:url('images/static/nail-care-stat-4.jpg');background-size:cover;background-position:center;">
+              <div class="zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Stat-Led Ad — Nail Care Product · Variant D</div>
+              <div class="card-desc">Static stat-led ad for a nail care product, built around a consumer study callout.</div>
+              <div class="card-tags"><span class="tag-pill">Stat-Led</span></div>
+              <a href="#" class="card-link">View ad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+            </div>
+          </article>
+
+          <article class="card reveal" data-tags="statled" data-image="images/static/nail-care-stat-5.jpg">
+            <div class="card-thumb" style="background-image:url('images/static/nail-care-stat-5.jpg');background-size:cover;background-position:center;">
+              <div class="zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Stat-Led Ad — Nail Care Product · Variant E</div>
+              <div class="card-desc">Static stat-led ad for a nail care product, built around a consumer study callout.</div>
+              <div class="card-tags"><span class="tag-pill">Stat-Led</span></div>
+              <a href="#" class="card-link">View ad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+            </div>
+          </article>
+
+          <article class="card reveal d1" data-tags="featuregrid" data-image="images/static/foot-recovery-listicle-1.jpg">
+            <div class="card-thumb" style="background-image:url('images/static/foot-recovery-listicle-1.jpg');background-size:cover;background-position:center;">
+              <div class="zoom-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">Feature Grid Ad — Foot Recovery Device</div>
+              <div class="card-desc">Static feature-grid ad for a foot recovery device, built around benefit icons and a sale hook.</div>
+              <div class="card-tags"><span class="tag-pill">Feature Grid</span></div>
+              <a href="#" class="card-link">View ad <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></a>
+            </div>
+          </article>
+
+        </div>
+
+        <div class="see-more-row hide" id="staticSeeMoreRow">
+          <button class="share-btn" id="staticSeeMoreBtn">See more</button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- APPROACH / TRAJECTORY + FORMAT EXPERIENCE -->
+  <section id="approach">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="section-tag">Approach</span>
+        <h2>Built for one thing: performance.</h2>
+      </div>
+
+      <div class="traj reveal">
+        <div class="traj-copy">
+          <p><strong>Every cut has a reason.</strong> Editing here isn't decorative — it's a retention and conversion tool, calibrated to the hook, the offer, and the platform.</p>
+          <p>Beyond the timeline, I read the numbers too: campaign structure, Meta ads performance, and content strategy inform how I edit for DTC brands specifically.</p>
+          <p>Output has scaled exponentially — more campaigns, more formats, more reach each year. The curve reflects that direction, not a plotted metric.</p>
+        </div>
+        <div class="chart-box">
+          <div class="chart-label"><span>Output trajectory</span><span>Directional</span></div>
+          <svg class="growth" viewBox="0 0 480 220" id="growthSvg">
+            <defs>
+              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#F5F5F2" stop-opacity="0.16"/>
+                <stop offset="100%" stop-color="#F5F5F2" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <line class="gridline" x1="0" y1="40" x2="480" y2="40"/>
+            <line class="gridline" x1="0" y1="100" x2="480" y2="100"/>
+            <line class="gridline" x1="0" y1="160" x2="480" y2="160"/>
+            <path class="area" d="M0,205 L100,200 L200,188 L280,165 L340,130 L390,80 L430,40 L480,15 L480,220 L0,220 Z"/>
+            <path class="line" d="M0,205 L100,200 L200,188 L280,165 L340,130 L390,80 L430,40 L480,15"/>
+            <circle class="dot" cx="480" cy="15" r="5"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMAT EXPERIENCE -->
+  <section style="padding-top:0;">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="section-tag">Format experience</span>
+        <h2>Three formats, one goal: conversion.</h2>
+        <p>The styles I use most for DTC ad campaigns.</p>
+      </div>
+      <div class="format-tags reveal">
+        <span class="format-tag">VO / B-Roll</span>
+        <span class="format-tag">Product Demo / Lifestyle</span>
+        <span class="format-tag">UGC</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="contact">
+    <div class="wrap contact-inner">
+      <h2>Ready to scale your ad creative?</h2>
+      <div class="contact-actions">
+        <button class="contact-btn" id="contactCopyEmail">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>
+          Copy email
+        </button>
+        <a class="contact-btn" href="mailto:chenekzomaleto@gmail.com">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
+          Email me
+        </a>
+        <a class="contact-btn" href="https://instagram.com/chenek__" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          DM on Instagram
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- CONTACT MODAL -->
+<div class="modal-backdrop" id="contactModal">
+  <div class="modal-card">
+    <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+    <h3>Let's talk</h3>
+    <p>Pick whatever's easiest for you.</p>
+    <div class="modal-actions">
+      <button class="contact-btn" id="modalCopyEmail">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>
+        Copy email
+      </button>
+      <a class="contact-btn" href="mailto:chenekzomaleto@gmail.com">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
+        Email me
+      </a>
+      <a class="contact-btn" href="https://instagram.com/chenek__" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        DM on Instagram
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- VIDEO MODAL -->
+<div class="modal-backdrop" id="videoModal">
+  <div class="video-modal-card">
+    <button class="modal-close" id="videoModalClose" aria-label="Close">✕</button>
+    <div class="video-player-wrap">
+      <div id="ytPlayerHost"></div>
+      <div id="vimeoPlayerHost" style="display:none;"></div>
+      <button class="video-toggle" id="videoToggle" aria-label="Play or pause">
+        <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+      </button>
+      <div class="video-controls">
+        <button class="video-mute" id="videoMute" aria-label="Mute or unmute">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+        </button>
+        <div class="video-seek" id="videoSeek"><div class="video-seek-fill" id="videoSeekFill"></div></div>
+        <span class="video-time" id="videoTime">0:00 / 0:00</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATIC AD IMAGE VIEWER -->
+<div class="modal-backdrop" id="imageModal">
+  <div class="image-modal-card">
+    <button class="modal-close" id="imageModalClose" aria-label="Close">✕</button>
+    <img id="adImage" src="" alt="Static ad">
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Bryan Editor</span>
+    <span>DTC &amp; Ecommerce Creative</span>
+  </div>
+</footer>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="https://player.vimeo.com/api/player.js"></script>
+<script>
+(function(){
+  // ---------- re-anchor to hash after fonts settle ----------
+  // web fonts loading late can reflow the page and leave an initial #hash
+  // scroll short of its target (e.g. a shared filtered link landing above #work).
+  if(window.location.hash){
+    var reAnchor = function(){
+      var el = document.querySelector(window.location.hash);
+      if(el) el.scrollIntoView({ block: 'start' });
+    };
+    reAnchor();
+    [50, 150, 350, 700, 1200, 2000].forEach(function(ms){ setTimeout(reAnchor, ms); });
+    if(document.fonts && document.fonts.ready){
+      document.fonts.ready.then(function(){ requestAnimationFrame(reAnchor); });
+    }
+    window.addEventListener('load', reAnchor);
+  }
+
+  // ---------- count-up helper ----------
+  var countedEls = new WeakSet();
+  function runCount(el){
+    if(countedEls.has(el)) return;
+    countedEls.add(el);
+    var target = parseFloat(el.getAttribute('data-count'));
+    var suffix = el.getAttribute('data-suffix') || '';
+    var comma = el.getAttribute('data-comma') === 'true';
+    var duration = 1400;
+    var start = null;
+    function tick(ts){
+      if(!start) start = ts;
+      var progress = Math.min((ts - start) / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      var value = Math.round(target * eased);
+      el.textContent = (comma ? value.toLocaleString('en-US') : value) + suffix;
+      if(progress < 1){ requestAnimationFrame(tick); }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ---------- reveal on scroll ----------
+  var revealEls = document.querySelectorAll('.reveal, .bars, svg.growth');
+  var revealed = new WeakSet();
+  function markRevealed(el){
+    if(revealed.has(el)) return;
+    revealed.add(el);
+    el.classList.add('in');
+    el.querySelectorAll('.i-num').forEach(runCount);
+  }
+  function checkReveal(){
+    revealEls.forEach(function(el){
+      if(revealed.has(el)) return;
+      var rect = el.getBoundingClientRect();
+      if(rect.top < window.innerHeight * 0.9 && rect.bottom > 0){
+        markRevealed(el);
+      }
+    });
+  }
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          markRevealed(e.target);
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    revealEls.forEach(function(el){ io.observe(el); });
+  }
+  // independent fallback: also check on scroll/resize, in case IntersectionObserver
+  // never fires (older browsers, edge cases) — keeps this from ever getting stuck.
+  window.addEventListener('scroll', function(){ requestAnimationFrame(checkReveal); }, { passive: true });
+  window.addEventListener('resize', checkReveal);
+  checkReveal();
+
+  // ---------- grid hover spotlight ----------
+  var statsSection = document.getElementById('statsSection');
+  var statsGlow = statsSection ? statsSection.querySelector('.stats-grid-glow') : null;
+  if(statsSection && statsGlow){
+    statsSection.addEventListener('mousemove', function(ev){
+      var rect = statsSection.getBoundingClientRect();
+      var x = ev.clientX - rect.left;
+      var y = ev.clientY - rect.top;
+      statsGlow.style.setProperty('--mx', x + 'px');
+      statsGlow.style.setProperty('--my', y + 'px');
+    });
+  }
+
+  // ---------- FILTER WIDGET (video panel only) ----------
+  var chips = document.querySelectorAll('#videoPanel .chip');
+  var cards = document.querySelectorAll('#videoPanel .card');
+  var activeTags = new Set();
+
+  // live counts per chip
+  chips.forEach(function(chip){
+    var tag = chip.getAttribute('data-tag');
+    var countEl = chip.querySelector('.chip-count');
+    if(!countEl) return;
+    var n = tag === 'all' ? cards.length : Array.from(cards).filter(function(card){
+      return (card.getAttribute('data-tags') || '').split(' ').indexOf(tag) !== -1;
+    }).length;
+    countEl.textContent = ' (' + n + ')';
+  });
+
+  var VIDEO_SEE_MORE_LIMIT = 3;
+  var videoCollapsed = true;
+  var videoSeeMoreRow = document.getElementById('videoSeeMoreRow');
+  var videoSeeMoreBtn = document.getElementById('videoSeeMoreBtn');
+
+  function applyFilter(){
+    var visibleIndex = 0;
+    var matchCount = 0;
+    cards.forEach(function(card){
+      var tags = (card.getAttribute('data-tags') || '').split(' ');
+      var tagMatch = activeTags.size === 0 || tags.some(function(t){ return activeTags.has(t); });
+      if(tagMatch) matchCount++;
+      var match = tagMatch && (!videoCollapsed || visibleIndex < VIDEO_SEE_MORE_LIMIT);
+      if(tagMatch){
+        card.style.setProperty('--stagger', (visibleIndex * 45) + 'ms');
+        visibleIndex++;
+      } else {
+        card.style.setProperty('--stagger', '0ms');
+      }
+      card.classList.toggle('hide', !match);
+    });
+    if(videoSeeMoreRow){
+      videoSeeMoreRow.classList.toggle('hide', !(videoCollapsed && matchCount > VIDEO_SEE_MORE_LIMIT));
+    }
+    var url = new URL(window.location.href);
+    if(activeTags.size === 0){
+      url.searchParams.delete('tags');
+    } else {
+      url.searchParams.set('tags', Array.from(activeTags).join(','));
+    }
+    url.hash = 'work';
+    history.replaceState(null, '', url.toString());
+  }
+
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      var tag = chip.getAttribute('data-tag');
+      if(tag === 'all'){
+        activeTags.clear();
+        chips.forEach(function(c){ c.classList.remove('active'); });
+        chip.classList.add('active');
+      } else {
+        chips[0].classList.remove('active');
+        chip.classList.toggle('active');
+        if(activeTags.has(tag)){ activeTags.delete(tag); } else { activeTags.add(tag); }
+        if(activeTags.size === 0){ chips[0].classList.add('active'); }
+      }
+      applyFilter();
+    });
+  });
+
+  if(videoSeeMoreBtn){
+    videoSeeMoreBtn.addEventListener('click', function(){
+      videoCollapsed = false;
+      applyFilter();
+    });
+  }
+
+  applyFilter();
+
+  // init from URL
+  (function initFromUrl(){
+    var params = new URL(window.location.href).searchParams;
+    if(params.get('selection')) return; // hand-picked selection takes priority
+    var tags = params.get('tags');
+    if(tags){
+      tags.split(',').forEach(function(t){
+        activeTags.add(t);
+        var chip = document.querySelector('.chip[data-tag="'+t+'"]');
+        if(chip){ chip.classList.add('active'); }
+      });
+      chips[0].classList.remove('active');
+      videoCollapsed = false;
+      applyFilter();
+      showCuratedBanner();
+    }
+  })();
+
+  // ---------- curated link banner ----------
+  // shown only when arriving via a link that already carries a ?tags= or ?selection=
+  // filter, so a client knows this view was picked for them, not the default portfolio.
+  function showCuratedBanner(handPicked){
+    var banner = document.getElementById('curatedBanner');
+    var countEl = document.getElementById('curatedCount');
+    var pluralEl = document.getElementById('curatedPlural');
+    var textEl = banner.querySelector('.curated-text');
+    if(!banner) return;
+    var n = document.querySelectorAll('.card:not(.hide)').length;
+    countEl.textContent = n;
+    pluralEl.textContent = n === 1 ? '' : 's';
+    textEl.childNodes[0].textContent = handPicked
+      ? 'A hand-picked selection was made for you — showing '
+      : 'A selection was made for you — showing ';
+    banner.classList.add('show');
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ banner.classList.add('in'); });
+    });
+  }
+  function hideCuratedBanner(){
+    var banner = document.getElementById('curatedBanner');
+    banner.classList.remove('in');
+    setTimeout(function(){ banner.classList.remove('show'); }, 400);
+  }
+  var curatedClearBtn = document.getElementById('curatedClear');
+  var curatedCloseBtn = document.getElementById('curatedClose');
+  if(curatedClearBtn){
+    curatedClearBtn.addEventListener('click', function(){
+      // hard navigation to a clean URL — simplest reliable way to restore
+      // full portfolio + filter UI regardless of which mode (tags/selection) was active.
+      window.location.href = window.location.origin + window.location.pathname + '#work';
+    });
+  }
+  if(curatedCloseBtn){
+    curatedCloseBtn.addEventListener('click', hideCuratedBanner);
+  }
+
+  // ---------- FILTER WIDGET (static panel only) ----------
+  var staticChips = document.querySelectorAll('#staticPanel .chip');
+  var staticCards = document.querySelectorAll('#staticPanel .card');
+  var activeStaticTags = new Set();
+
+  staticChips.forEach(function(chip){
+    var tag = chip.getAttribute('data-tag');
+    var countEl = chip.querySelector('.chip-count');
+    if(!countEl) return;
+    var n = tag === 'all' ? staticCards.length : Array.from(staticCards).filter(function(card){
+      return (card.getAttribute('data-tags') || '').split(' ').indexOf(tag) !== -1;
+    }).length;
+    countEl.textContent = ' (' + n + ')';
+  });
+
+  var STATIC_SEE_MORE_LIMIT = 3;
+  var staticCollapsed = true;
+  var staticSeeMoreRow = document.getElementById('staticSeeMoreRow');
+  var staticSeeMoreBtn = document.getElementById('staticSeeMoreBtn');
+
+  function applyStaticFilter(){
+    var visibleIndex = 0;
+    var matchCount = 0;
+    staticCards.forEach(function(card){
+      var tags = (card.getAttribute('data-tags') || '').split(' ');
+      var tagMatch = activeStaticTags.size === 0 || tags.some(function(t){ return activeStaticTags.has(t); });
+      if(tagMatch) matchCount++;
+      var match = tagMatch && (!staticCollapsed || visibleIndex < STATIC_SEE_MORE_LIMIT);
+      if(tagMatch){
+        card.style.setProperty('--stagger', (visibleIndex * 45) + 'ms');
+        visibleIndex++;
+      } else {
+        card.style.setProperty('--stagger', '0ms');
+      }
+      card.classList.toggle('hide', !match);
+    });
+    if(staticSeeMoreRow){
+      staticSeeMoreRow.classList.toggle('hide', !(staticCollapsed && matchCount > STATIC_SEE_MORE_LIMIT));
+    }
+  }
+
+  staticChips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      var tag = chip.getAttribute('data-tag');
+      if(tag === 'all'){
+        activeStaticTags.clear();
+        staticChips.forEach(function(c){ c.classList.remove('active'); });
+        chip.classList.add('active');
+      } else {
+        staticChips[0].classList.remove('active');
+        chip.classList.toggle('active');
+        if(activeStaticTags.has(tag)){ activeStaticTags.delete(tag); } else { activeStaticTags.add(tag); }
+        if(activeStaticTags.size === 0){ staticChips[0].classList.add('active'); }
+      }
+      applyStaticFilter();
+    });
+  });
+
+  if(staticSeeMoreBtn){
+    staticSeeMoreBtn.addEventListener('click', function(){
+      staticCollapsed = false;
+      applyStaticFilter();
+    });
+  }
+
+  applyStaticFilter();
+
+  // ---------- manual video selection (video panel only) ----------
+  var projectGrid = document.getElementById('projectGrid');
+  var cardsArr = Array.from(document.querySelectorAll('#videoPanel .card'));
+  var selectMode = false;
+  var selectedIndices = new Set();
+
+  cardsArr.forEach(function(card){
+    var thumb = card.querySelector('.card-thumb');
+    var check = document.createElement('div');
+    check.className = 'select-check';
+    check.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4L19 7"/></svg>';
+    thumb.appendChild(check);
+  });
+
+  var selectModeBtn = document.getElementById('selectModeBtn');
+  var selectBar = document.getElementById('selectBar');
+  var selectCountEl = document.getElementById('selectCount');
+  var copySelectionBtn = document.getElementById('copySelectionBtn');
+  var exitSelectBtn = document.getElementById('exitSelectBtn');
+
+  function updateSelectBar(){
+    selectCountEl.textContent = selectedIndices.size;
+    selectBar.classList.toggle('show', selectMode);
+  }
+
+  function toggleSelectMode(){
+    selectMode = !selectMode;
+    projectGrid.classList.toggle('select-mode', selectMode);
+    selectModeBtn.textContent = selectMode ? 'Cancel selection' : 'Select videos';
+    selectModeBtn.classList.toggle('active', selectMode);
+    if(!selectMode){
+      selectedIndices.clear();
+      cardsArr.forEach(function(c){ c.classList.remove('selected'); });
+    }
+    updateSelectBar();
+  }
+  selectModeBtn.addEventListener('click', toggleSelectMode);
+  exitSelectBtn.addEventListener('click', toggleSelectMode);
+
+  cardsArr.forEach(function(card, i){
+    card.addEventListener('click', function(ev){
+      if(!selectMode) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      if(selectedIndices.has(i)){
+        selectedIndices.delete(i);
+        card.classList.remove('selected');
+      } else {
+        selectedIndices.add(i);
+        card.classList.add('selected');
+      }
+      updateSelectBar();
+    }, true);
+  });
+
+  copySelectionBtn.addEventListener('click', function(){
+    if(selectedIndices.size === 0) return;
+    var idx = Array.from(selectedIndices).sort(function(a,b){ return a - b; }).map(function(i){ return i + 1; });
+    var url = new URL(window.location.href);
+    url.searchParams.delete('tags');
+    url.searchParams.set('selection', idx.join(','));
+    url.hash = 'work';
+    navigator.clipboard.writeText(url.toString()).then(function(){
+      copySelectionBtn.textContent = 'Link copied ✓';
+      setTimeout(function(){ copySelectionBtn.textContent = 'Copy selection link'; }, 1800);
+    });
+  });
+
+  // init hand-picked selection from URL — takes priority over tag filtering
+  (function initSelectionFromUrl(){
+    var params = new URL(window.location.href).searchParams;
+    var sel = params.get('selection');
+    if(!sel) return;
+    var idxSet = new Set(sel.split(',').map(function(s){ return parseInt(s, 10) - 1; }));
+    cardsArr.forEach(function(card, i){
+      card.classList.toggle('hide', !idxSet.has(i));
+    });
+    var filterHint = document.querySelector('.filter-hint');
+    var filterRow = document.querySelector('.filter-row');
+    var shareRow = document.querySelector('.share-row');
+    if(filterHint) filterHint.style.display = 'none';
+    if(filterRow) filterRow.style.display = 'none';
+    if(shareRow) shareRow.style.display = 'none';
+    if(videoSeeMoreRow) videoSeeMoreRow.classList.add('hide');
+    showCuratedBanner(true);
+  })();
+
+  // ---------- copy filtered link ----------
+  var copyBtn = document.getElementById('copyLinkBtn');
+  copyBtn.addEventListener('click', function(){
+    navigator.clipboard.writeText(window.location.href).then(function(){
+      copyBtn.textContent = 'Link copied ✓';
+      copyBtn.classList.add('copied');
+      setTimeout(function(){
+        copyBtn.textContent = 'Copy filtered link';
+        copyBtn.classList.remove('copied');
+      }, 1800);
+    });
+  });
+
+  // ---------- copy email (contact section + modal) ----------
+  var EMAIL = 'chenekzomaleto@gmail.com';
+  function wireCopyEmail(btn){
+    if(!btn) return;
+    var original = btn.innerHTML;
+    btn.addEventListener('click', function(){
+      navigator.clipboard.writeText(EMAIL).then(function(){
+        btn.classList.add('copied');
+        btn.innerHTML = original.replace('Copy email', 'Email copied ✓');
+        setTimeout(function(){
+          btn.innerHTML = original;
+          btn.classList.remove('copied');
+        }, 1800);
+      });
+    });
+  }
+  wireCopyEmail(document.getElementById('contactCopyEmail'));
+  wireCopyEmail(document.getElementById('modalCopyEmail'));
+
+  // ---------- beam CTA glint ----------
+  // idle: glint loops around the border on its own (CSS animation).
+  // on real hover: pause the loop and let it track the cursor instead.
+  document.querySelectorAll('.beam').forEach(function(beam){
+    var glint = beam.querySelector('.beam-glint');
+    if(!glint) return;
+    beam.addEventListener('mouseenter', function(){
+      glint.classList.add('following');
+    });
+    beam.addEventListener('mousemove', function(ev){
+      var rect = beam.getBoundingClientRect();
+      glint.style.left = (ev.clientX - rect.left) + 'px';
+      glint.style.top = (ev.clientY - rect.top) + 'px';
+    });
+    beam.addEventListener('mouseleave', function(){
+      glint.classList.remove('following');
+      glint.style.left = '';
+      glint.style.top = '';
+    });
+  });
+
+  // ---------- contact modal ----------
+  var modal = document.getElementById('contactModal');
+  function openModal(ev){
+    if(ev) ev.preventDefault();
+    modal.classList.add('open');
+  }
+  function closeModal(){
+    modal.classList.remove('open');
+  }
+  var navContactBtn = document.getElementById('navContactBtn');
+  var heroContactBtn = document.getElementById('heroContactBtn');
+  if(navContactBtn) navContactBtn.addEventListener('click', openModal);
+  if(heroContactBtn) heroContactBtn.addEventListener('click', openModal);
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  modal.addEventListener('click', function(ev){
+    if(ev.target === modal) closeModal();
+  });
+  document.addEventListener('keydown', function(ev){
+    if(ev.key === 'Escape') closeModal();
+  });
+
+  // ---------- custom video player (YouTube + Vimeo backed, no platform UI shown) ----------
+  var ytPlayer = null;
+  var vimeoPlayer = null;
+  var activeKind = null; // 'youtube' | 'vimeo'
+  var videoModal = document.getElementById('videoModal');
+  var ytHost = document.getElementById('ytPlayerHost');
+  var vimeoHost = document.getElementById('vimeoPlayerHost');
+  var videoToggle = document.getElementById('videoToggle');
+  var videoMuteBtn = document.getElementById('videoMute');
+  var videoSeek = document.getElementById('videoSeek');
+  var videoSeekFill = document.getElementById('videoSeekFill');
+  var videoTime = document.getElementById('videoTime');
+  var seekInterval = null;
+
+  function fmtTime(s){
+    s = Math.floor(s || 0);
+    var m = Math.floor(s / 60), sec = s % 60;
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+
+  function updateSeekUI(){
+    if(!ytPlayer || !ytPlayer.getDuration) return;
+    var dur = ytPlayer.getDuration() || 0;
+    var cur = ytPlayer.getCurrentTime() || 0;
+    videoSeekFill.style.width = (dur ? (cur / dur * 100) : 0) + '%';
+    videoTime.textContent = fmtTime(cur) + ' / ' + fmtTime(dur);
+  }
+
+  function onPlayerStateChange(e){
+    var playing = e.data === YT.PlayerState.PLAYING;
+    videoToggle.classList.toggle('is-playing', playing);
+    if(playing && !seekInterval){ seekInterval = setInterval(updateSeekUI, 300); }
+    if(!playing && seekInterval){ clearInterval(seekInterval); seekInterval = null; }
+  }
+
+  function createYtPlayer(youtubeId){
+    if(ytPlayer && ytPlayer.loadVideoById){
+      ytPlayer.loadVideoById(youtubeId);
+      return;
+    }
+    ytPlayer = new YT.Player(ytHost, {
+      videoId: youtubeId,
+      playerVars: { controls: 0, modestbranding: 1, rel: 0, iv_load_policy: 3, disablekb: 1, fs: 0, playsinline: 1 },
+      events: {
+        onReady: function(e){ e.target.playVideo(); },
+        onStateChange: onPlayerStateChange
+      }
+    });
+  }
+
+  function createVimeoPlayer(vimeoId){
+    if(vimeoPlayer && vimeoPlayer.loadVideo){
+      vimeoPlayer.loadVideo(vimeoId).then(function(){ vimeoPlayer.play(); });
+      return;
+    }
+    vimeoPlayer = new Vimeo.Player(vimeoHost, {
+      id: vimeoId, controls: false, autoplay: true, muted: false,
+      playsinline: true, transparent: false, title: false, byline: false, portrait: false
+    });
+    vimeoPlayer.on('play', function(){ videoToggle.classList.add('is-playing'); });
+    vimeoPlayer.on('pause', function(){ videoToggle.classList.remove('is-playing'); });
+    vimeoPlayer.on('timeupdate', function(data){
+      videoSeekFill.style.width = (data.percent * 100) + '%';
+      videoTime.textContent = fmtTime(data.seconds) + ' / ' + fmtTime(data.duration);
+    });
+  }
+
+  function openVideoModal(kind, id){
+    activeKind = kind;
+    videoModal.classList.add('open');
+    ytHost.style.display = kind === 'youtube' ? '' : 'none';
+    vimeoHost.style.display = kind === 'vimeo' ? '' : 'none';
+    if(kind === 'youtube'){
+      if(window.YT && window.YT.Player){
+        createYtPlayer(id);
+      } else {
+        window.onYouTubeIframeAPIReady = function(){ createYtPlayer(id); };
+      }
+    } else {
+      createVimeoPlayer(id);
+    }
+  }
+
+  function closeVideoModal(){
+    videoModal.classList.remove('open');
+    if(ytPlayer && ytPlayer.stopVideo){ ytPlayer.stopVideo(); }
+    if(vimeoPlayer && vimeoPlayer.pause){ vimeoPlayer.pause().catch(function(){}); }
+    clearInterval(seekInterval);
+    seekInterval = null;
+  }
+
+  // ---------- horizontal reel teaser (video) ----------
+  document.querySelectorAll('#workReel .work-reel-item').forEach(function(item){
+    item.addEventListener('click', function(){
+      var youtubeId = item.getAttribute('data-youtube-id');
+      var vimeoId = item.getAttribute('data-vid-vimeo');
+      if(youtubeId){ openVideoModal('youtube', youtubeId); }
+      else if(vimeoId){ openVideoModal('vimeo', vimeoId); }
+    });
+  });
+
+  videoToggle.addEventListener('click', function(){
+    if(activeKind === 'youtube'){
+      if(!ytPlayer || !ytPlayer.getPlayerState) return;
+      if(ytPlayer.getPlayerState() === YT.PlayerState.PLAYING){ ytPlayer.pauseVideo(); }
+      else { ytPlayer.playVideo(); }
+    } else if(activeKind === 'vimeo'){
+      if(!vimeoPlayer) return;
+      vimeoPlayer.getPaused().then(function(paused){
+        if(paused){ vimeoPlayer.play(); } else { vimeoPlayer.pause(); }
+      });
+    }
+  });
+  videoMuteBtn.addEventListener('click', function(){
+    if(activeKind === 'youtube'){
+      if(!ytPlayer || !ytPlayer.isMuted) return;
+      if(ytPlayer.isMuted()){ ytPlayer.unMute(); videoMuteBtn.classList.remove('is-muted'); }
+      else { ytPlayer.mute(); videoMuteBtn.classList.add('is-muted'); }
+    } else if(activeKind === 'vimeo'){
+      if(!vimeoPlayer) return;
+      vimeoPlayer.getVolume().then(function(v){
+        if(v > 0){ vimeoPlayer.setVolume(0); videoMuteBtn.classList.add('is-muted'); }
+        else { vimeoPlayer.setVolume(1); videoMuteBtn.classList.remove('is-muted'); }
+      });
+    }
+  });
+  videoSeek.addEventListener('click', function(ev){
+    var rect = videoSeek.getBoundingClientRect();
+    var pct = (ev.clientX - rect.left) / rect.width;
+    if(activeKind === 'youtube'){
+      if(!ytPlayer || !ytPlayer.getDuration) return;
+      ytPlayer.seekTo(ytPlayer.getDuration() * pct, true);
+    } else if(activeKind === 'vimeo'){
+      if(!vimeoPlayer) return;
+      vimeoPlayer.getDuration().then(function(dur){ vimeoPlayer.setCurrentTime(dur * pct); });
+    }
+  });
+  document.getElementById('videoModalClose').addEventListener('click', closeVideoModal);
+  videoModal.addEventListener('click', function(ev){
+    if(ev.target === videoModal) closeVideoModal();
+  });
+  document.addEventListener('keydown', function(ev){
+    if(ev.key === 'Escape' && videoModal.classList.contains('open')) closeVideoModal();
+  });
+
+  // wire "View reel" links — add data-youtube-id or data-vid-vimeo on a .card to activate
+  document.querySelectorAll('.card').forEach(function(card){
+    var youtubeId = card.getAttribute('data-youtube-id');
+    var vimeoId = card.getAttribute('data-vid-vimeo');
+    if(!youtubeId && !vimeoId) return;
+    var link = card.querySelector('.card-link');
+    var thumb = card.querySelector('.card-thumb');
+    [link, thumb].forEach(function(el){
+      if(!el) return;
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', function(ev){
+        ev.preventDefault();
+        if(youtubeId){ openVideoModal('youtube', youtubeId); } else { openVideoModal('vimeo', vimeoId); }
+      });
+    });
+  });
+
+  // ---------- media type toggle (video / static) ----------
+  var mediaToggleBtns = document.querySelectorAll('.media-toggle-btn');
+  var mediaToggleIndicator = document.getElementById('mediaToggleIndicator');
+  var videoPanel = document.getElementById('videoPanel');
+  var staticPanel = document.getElementById('staticPanel');
+  mediaToggleBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var media = btn.getAttribute('data-media');
+      mediaToggleBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      mediaToggleIndicator.classList.toggle('static-active', media === 'static');
+      videoPanel.style.display = media === 'video' ? '' : 'none';
+      staticPanel.style.display = media === 'static' ? '' : 'none';
+    });
+  });
+
+  // ---------- static ad image viewer ----------
+  // add data-image="path/to/ad.jpg" on a .card (instead of data-youtube-id) to activate
+  var imageModal = document.getElementById('imageModal');
+  var adImage = document.getElementById('adImage');
+  function openImageModal(src){
+    adImage.src = src;
+    imageModal.classList.add('open');
+  }
+  function closeImageModal(){
+    imageModal.classList.remove('open');
+  }
+  document.getElementById('imageModalClose').addEventListener('click', closeImageModal);
+  imageModal.addEventListener('click', function(ev){
+    if(ev.target === imageModal) closeImageModal();
+  });
+  document.querySelectorAll('#staticReel .work-reel-item').forEach(function(item){
+    item.addEventListener('click', function(){
+      openImageModal(item.getAttribute('data-image'));
+    });
+  });
+  document.addEventListener('keydown', function(ev){
+    if(ev.key === 'Escape' && imageModal.classList.contains('open')) closeImageModal();
+  });
+  document.querySelectorAll('.card').forEach(function(card){
+    var imgSrc = card.getAttribute('data-image');
+    if(!imgSrc) return;
+    var link = card.querySelector('.card-link');
+    var thumb = card.querySelector('.card-thumb');
+    [link, thumb].forEach(function(el){
+      if(!el) return;
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', function(ev){
+        ev.preventDefault();
+        openImageModal(imgSrc);
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
